@@ -1,0 +1,45 @@
+'Macro fue hecho por S. Martinez, el 11 de noviembre 2015.
+'El macro rellena los rotulos de SADE y otros con datos a personalizar
+'Cualquier consulta o error avisen a smartinez@sade-sa.com
+
+'Siguientes variables se deben definir por el usuario
+Const strDibujado As String = "S. Martínez" 'cambiar a persona indicada a dibujar
+Const strRevisado As String = "M. Gamizo" 'cambiar a persona indicada a revisar
+Const strAprobado As String = "J. Romero" 'cambiar a persona indicada a aprobar
+
+Dim swApp As SldWorks.SldWorks
+Dim swModel As SldWorks.ModelDoc2
+Dim modelDocExt As SldWorks.ModelDocExtension
+Dim swCustPropMgr As SldWorks.CustomPropertyManager
+Dim strFecha As String
+Dim strText As String
+Dim ret As Boolean
+
+
+
+ Sub main()
+    Set swApp = Application.SldWorks
+    Set swModel = swApp.ActiveDoc
+    Set modelDocExt = swModel.Extension
+    Set swCustPropMgr = swModel.Extension.CustomPropertyManager(Empty)
+    strFecha = Format(Date, "dd/mm/yy")
+    
+    swCustPropMgr.Set "Fecha Dibujado", strFecha
+    swCustPropMgr.Set "Dibujado", strDibujado
+    swCustPropMgr.Set "Revisado", strRevisado
+    swCustPropMgr.Set "Aprobado", strAprobado
+Call rebuild
+End Sub
+
+Sub rebuild()
+
+    Set swApp = Application.SldWorks
+    Set swModel = swApp.ActiveDoc
+    ret = swModel.ForceRebuild3(False)
+    'swApp.SendMsgToUser2 "Successfully rebuilt? " & ret, swMbInformation, swMbOk
+
+End Sub
+
+ 
+
+
