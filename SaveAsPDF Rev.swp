@@ -1,0 +1,45 @@
+'Macro fue hecho por S. Martinez, el 11 de noviembre 2015.
+'El macro rellena los rotulos de SADE y otros con datos a personalizar
+'Cualquier consulta o error avisen a smartinez@sade-sa.com
+
+Dim swApp           As SldWorks.SldWorks
+Dim swModel         As SldWorks.ModelDoc2
+Dim swCustProp      As SldWorks.CustomPropertyManager
+Dim swDraw          As SldWorks.DrawingDoc
+Dim valOut          As String
+Dim resolvedValOut  As String
+Dim Filepath        As String
+Dim FileName        As String
+Dim swView          As SldWorks.View
+Dim Rev             As String
+ 
+Sub main()
+Set swApp = Application.SldWorks
+Set swModel = swApp.ActiveDoc
+Set swDraw = swModel
+
+    If (swDraw Is Nothing) Then
+        swApp.SendMsgToUser2 "Debe haber un plano abierto!", swMbStop, swMbOk
+        End
+    End If
+
+Set swCustProp = swModel.Extension.CustomPropertyManager(Empty)
+
+
+If (swModel.GetPathName = Empty) Then
+    swApp.SendMsgToUser2 "El archivo debe ser guardado antes de poder seguir!", swMbStop, swMbOk
+Exit Sub
+End If
+
+swCustProp.Get2 "Revision", valOut, resolvedValOut 'Change the custom property name here
+
+FileName = Mid(swModel.GetPathName, InStrRev(swModel.GetPathName, "\") + 1)
+FileName = Left(FileName, InStrRev(FileName, ".") - 1)
+ 
+Filepath = Left(swModel.GetPathName, InStrRev(swModel.GetPathName, "\"))
+
+swDraw.SaveAs (Filepath & FileName & "-" & valOut & ".PDF") 'Change the custom property text here
+ 
+End Sub
+
+
