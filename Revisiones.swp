@@ -1,0 +1,225 @@
+'Macro fue hecho por S. Martinez, el 19 de noviembre 2015.
+'El macro rellena los rotulos de SADE y otros con datos a personalizar
+'Cualquier consulta o error avisen a smartinez@sade-sa.com
+
+Option Explicit
+
+'Siguientes variables se deben definir por el usuario
+Const path As String = "D:\Templates SADE SW\Bloques\" 'Se debe actualizar al directorio de los bloques
+
+Dim swApp               As Object
+Dim Part                As Object
+Dim swCustProp          As SldWorks.CustomPropertyManager
+Dim swDraw              As SldWorks.DrawingDoc
+Dim strRev              As String
+Dim resolvedValOut      As String
+Dim strEje              As String
+Dim strApro             As String
+Dim strDescr            As String
+Dim PointCoords(2)      As Double
+Dim swSktManager        As SldWorks.SketchManager
+Dim swMathUtility       As SldWorks.MathUtility
+Dim swMathPoint         As SldWorks.MathPoint
+Dim swBlockDef          As SldWorks.SketchBlockDefinition
+Dim swBlockInst         As SldWorks.SketchBlockInstance
+Dim swSheet             As SldWorks.Sheet
+Dim scl                 As Double
+Dim angle               As Double
+Dim swSelMgr            As SldWorks.SelectionMgr
+Dim swFeat              As SldWorks.Feature
+Dim vBlocks             As Variant
+Dim vSheetProps         As Variant
+Dim vBlock              As Variant
+Dim vSketchBlockDefs    As Variant
+Dim vSketchBlockDef     As Variant
+Dim swSketchBlockDef    As SldWorks.SketchBlockDefinition
+Dim bool                As Boolean
+Dim Obj                 As Object
+Dim ObjAn               As SldWorks.Annotation
+Dim swTextFormat        As SldWorks.Textformat
+Dim i                   As Long
+Dim abc(0 To 25, 0 To 25, 0 To 25, 0 To 25) As Variant
+Dim c                   As String
+Dim f                   As Double
+Dim g                   As Double
+
+Sub main()
+
+    Set swApp = Application.SldWorks
+    Set Part = swApp.ActiveDoc
+    Set swDraw = Part
+    Set swCustProp = Part.Extension.CustomPropertyManager(Empty)
+    Set swSheet = swDraw.GetCurrentSheet
+    vSheetProps = swSheet.GetProperties
+    Debug.Print vSheetProps(0)
+    swCustProp.Get2 "Revision", c, resolvedValOut 'Change the custom property name here
+    
+    If c = 26 Then
+    bool = swApp.SendMsgToUser2("Se llego a la maxima cantidad de revisiones", swMbWarning, swMbOk)
+    End
+    End If
+
+    abc(1, 0, 0, 0) = ("B")
+    abc(2, 0, 0, 0) = ("C")
+    abc(3, 0, 0, 0) = ("D")
+    abc(4, 0, 0, 0) = ("E")
+    abc(5, 0, 0, 0) = ("F")
+    abc(6, 0, 0, 0) = ("G")
+    abc(7, 0, 0, 0) = ("H")
+    abc(8, 0, 0, 0) = ("I")
+    abc(9, 0, 0, 0) = ("J")
+    abc(10, 0, 0, 0) = ("K")
+    abc(11, 0, 0, 0) = ("L")
+    abc(12, 0, 0, 0) = ("M")
+    abc(13, 0, 0, 0) = ("N")
+    abc(14, 0, 0, 0) = ("O")
+    abc(15, 0, 0, 0) = ("P")
+    abc(16, 0, 0, 0) = ("Q")
+    abc(17, 0, 0, 0) = ("R")
+    abc(18, 0, 0, 0) = ("S")
+    abc(19, 0, 0, 0) = ("T")
+    abc(20, 0, 0, 0) = ("U")
+    abc(21, 0, 0, 0) = ("V")
+    abc(22, 0, 0, 0) = ("W")
+    abc(23, 0, 0, 0) = ("X")
+    abc(24, 0, 0, 0) = ("Y")
+    abc(25, 0, 0, 0) = ("Z")
+
+    If vSheetProps(0) = 7 Then
+    'abc(1, 1, 0, 0) = (0.08195) 'Coordenada A4 en Y de textos
+    abc(1, 1, 1, 0) = (0.07808071419) ' Coordenada A4 en Y de bloque
+    abc(1, 1, 1, 1) = (0.02500041323) ' Coordenada A4 en X de bloque
+    End If
+    If vSheetProps(0) = 8 Then
+    'abc(1, 1, 0, 0) = (0.082164) 'Coordenada A3 en Y de textos
+    abc(1, 1, 1, 0) = (0.078295) ' Coordenada A3 en Y de bloque
+    abc(1, 1, 1, 1) = (0.235079) ' Coordenada A4 en X de bloque
+    End If
+    If vSheetProps(0) = 9 Then
+    'abc(1, 1, 0, 0) = (0.082378)    'Coordenada A2 en Y de textos
+    abc(1, 1, 1, 0) = (0.078509) ' Coordenada A2 en Y de bloque
+    abc(1, 1, 1, 1) = (0.409078) ' Coordenada A4 en X de bloque
+    End If
+    If vSheetProps(0) = 10 Then
+    'abc(1, 1, 0, 0) = (0.082592)    'Coordenada A1 en Y de textos
+    abc(1, 1, 1, 0) = (0.078723) ' Coordenada A1 en Y de bloque
+    abc(1, 1, 1, 1) = (0.656078) ' Coordenada A4 en X de bloque
+    End If
+    If vSheetProps(0) = 11 Then
+    'abc(1, 1, 0, 0) = (0.082807)    'Coordenada A0 en Y de textos
+    abc(1, 1, 1, 0) = (0.078937) ' Coordenada A0 en Y de bloque
+    abc(1, 1, 1, 1) = (1.0040788) ' Coordenada A4 en X de bloque
+    End If
+    
+    'f = abc(1, 1, 0, 0)
+    g = abc(1, 1, 1, 0)
+For i = 2 To 25
+    'abc(i, i, 0, 0) = (f + 0.0045)
+    abc(i, i, i, 0) = (g + 0.0045)
+    'f = abc(i, i, 0, 0)
+    g = abc(i, i, i, 0)
+Next i
+
+FormRevision.Show
+
+End Sub
+
+Public Sub Rellenar(strDescr As String, strEje As String, strApro As String)
+
+Set swApp = Application.SldWorks
+Set Part = swApp.ActiveDoc
+Set swDraw = Part
+Set swCustProp = Part.Extension.CustomPropertyManager(Empty)
+
+swCustProp.Get2 "Revision", c, resolvedValOut 'Change the custom property name here
+
+Part.EditTemplate
+
+Call Rellenar_note(CStr(abc(c, 0, 0, 0)), CDbl(abc(1, 1, 1, 1)) + 0.0044295, CDbl(abc(c, c, c, 0)) + 0.003869286)
+Call Rellenar_note(Format(Date, "dd/mm/yy"), CDbl(abc(1, 1, 1, 1)) + 0.0130095, CDbl(abc(c, c, c, 0)) + 0.003869286)
+Call Rellenar_note(strDescr, CDbl(abc(1, 1, 1, 1)) + 0.0301495, CDbl(abc(c, c, c, 0)) + 0.003869286)
+Call Rellenar_note(strEje, CDbl(abc(1, 1, 1, 1)) + 0.136999, CDbl(abc(c, c, c, 0)) + 0.003869286)
+Call Rellenar_note(strApro, CDbl(abc(1, 1, 1, 1)) + 0.157129, CDbl(abc(c, c, c, 0)) + 0.003869286)
+c = c + 1
+bool = swCustProp.Set("Revision", c)
+
+Part.EditSheet
+bool = Part.ForceRebuild3(False)
+
+End Sub
+
+Public Sub Bloque()
+
+    'Setear de variables de ambiente
+    Set swApp = Application.SldWorks
+    Set Part = swApp.ActiveDoc
+    Set swDraw = Part
+    Set swCustProp = Part.Extension.CustomPropertyManager(Empty)
+    Set swSheet = Part.GetCurrentSheet
+    Set swSktManager = Part.SketchManager
+    Set swSelMgr = Part.SelectionManager
+    Set swMathUtility = swApp.GetMathUtility
+    
+    'escala y angulo de bloque al insertar
+    scl = 1
+    angle = 0
+    
+    swCustProp.Get2 "Revision", c, resolvedValOut 'Change the custom property name here
+    
+    Part.EditTemplate 'Editar hoja
+    
+        Call Insertar_bloque(CDbl(abc(1, 1, 1, 1)), CDbl(abc(c, c, c, 0)))
+    
+    Part.EditSheet
+    bool = Part.ForceRebuild3(False)
+    
+End Sub
+
+Public Sub Rellenar_note(text As String, X As Double, Y As Double)
+
+Set Obj = Part.InsertNote(text)
+Set ObjAn = Obj.GetAnnotation()
+bool = ObjAn.SetPosition2(X, Y, 0)
+
+For i = 0 To ObjAn.GetTextFormatCount - 1
+    Set swTextFormat = ObjAn.GetTextFormat(i)
+    swTextFormat.CharHeight = 0.00238
+    bool = ObjAn.SetTextFormat(i, False, swTextFormat)
+Next
+
+End Sub
+
+Public Sub Insertar_bloque(X As Double, Y As Double)
+
+    'Definir posicion de revision
+    PointCoords(0) = X 'X
+    PointCoords(1) = Y 'Y
+    PointCoords(2) = 0 ' Z
+    
+    Set swMathPoint = swMathUtility.CreatePoint(PointCoords) 'creacion de punto de insercion
+
+    Set swBlockDef = swSktManager.MakeSketchBlockFromFile(swMathPoint, path & "Revision A4.SLDBLK", False, scl, angle)
+    
+    vSketchBlockDefs = swSktManager.GetSketchBlockDefinitions 'Obtener definicion de bloques
+    
+    'Loop de transferencia de definiciones
+    For Each vSketchBlockDef In vSketchBlockDefs
+        Set swSketchBlockDef = vSketchBlockDef
+        Set swFeat = swSketchBlockDef.GetFeature
+        Set swBlockDef = swFeat.GetSpecificFeature2
+    Next
+    
+    vBlocks = swBlockDef.GetInstances 'juntar instancias de bloques en array
+    
+    'Explotar cada bloque por separado
+    For Each vBlock In vBlocks
+        Set swBlockInst = vBlock
+        Part.SketchManager.ExplodeSketchBlockInstance swBlockInst
+    Next
+
+End Sub
+
+
+
+
+
